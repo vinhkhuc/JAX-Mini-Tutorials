@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/vinhkhuc/JAX-Mini-Tutorials.svg?branch=main)](https://travis-ci.org/vinhkhuc/JAX-Mini-Tutorials)
-
 Minimal tutorials for [JAX](https://github.com/jax-ml/jax) adapted
 from Alec Radford's [Theano tutorials](https://github.com/Newmu/Theano-Tutorials).
 
