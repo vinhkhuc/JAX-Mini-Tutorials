@@ -17,7 +17,7 @@ class ConvNet(nn.Module):
     def __call__(self, x, training):
         # x: (B, 1, 28, 28)
         # Flax expects NHWC, so we do the transpose first
-        x = jnp.transpose(x, (0, 2, 3, 1))     # (B, 28, 28, 1)
+        x = jnp.transpose(x, (0, 2, 3, 1))  # (B, 28, 28, 1)
 
         x = nn.Conv(features=10, kernel_size=(5, 5))(x)
         x = nn.max_pool(x, window_shape=(2, 2), strides=(2, 2))
@@ -27,7 +27,7 @@ class ConvNet(nn.Module):
         x = nn.max_pool(x, window_shape=(2, 2), strides=(2, 2))
         x = nn.relu(x)
 
-        x = x.reshape(x.shape[0], -1) # (B, 320)
+        x = x.reshape(x.shape[0], -1)  # (B, 320)
 
         x = nn.Dense(features=50, use_bias=False)(x)
         x = nn.relu(x)
@@ -41,7 +41,7 @@ def model_logits(params, model, X, training, rng=None):
         {"params": params},
         X,
         training=training,
-        **({"rngs": {"dropout": rng}} if training else {})
+        **({"rngs": {"dropout": rng}} if training else {}),
     )
 
 
@@ -94,10 +94,16 @@ def main():
     for epoch in range(epochs):
         total_loss = 0
         for k in range(num_batches):
-            start, end = k * bz, min((k+1) * bz, n_examples)
+            start, end = k * bz, min((k + 1) * bz, n_examples)
             rand_key, using_key = jax.random.split(rand_key)
             params, opt_state, loss = train_step(
-                params, opt_state, model, optimizer, trX[start:end], trY[start:end], using_key
+                params,
+                opt_state,
+                model,
+                optimizer,
+                trX[start:end],
+                trY[start:end],
+                using_key,
             )
             total_loss += float(loss)
 

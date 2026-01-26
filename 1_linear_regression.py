@@ -31,11 +31,11 @@ def main():
     lr = 0.01
     epochs = 50
     rand_key = jax.random.PRNGKey(42)
-    
+
     X = jnp.linspace(-1, 1, N)
 
     rand_key, using_key = jax.random.split(rand_key)
-    e = 0.33 * jax.random.normal(using_key, shape=(N, ))
+    e = 0.33 * jax.random.normal(using_key, shape=(N,))
     y = 2 * X + e
 
     rand_key, using_key = jax.random.split(rand_key)
@@ -46,14 +46,16 @@ def main():
     for epoch in range(epochs):
         total_loss = 0
         for k in range(num_batches):
-            start, end = k * bz, min((k+1) * bz, N)
+            start, end = k * bz, min((k + 1) * bz, N)
             w, loss = train(w, X[start:end], y[start:end], lr)
             total_loss += float(loss)
 
         avg_loss = total_loss / num_batches
         predY = predict(w, X)
         mse = jnp.mean((predY - y) ** 2)
-        print(f"Epoch {epoch+1: 3d}, cost ≈ {avg_loss:.6f}, mse ≈ {mse:.6f}, w ≈ {w:.4f}")
+        print(
+            f"Epoch {epoch+1: 3d}, cost ≈ {avg_loss:.6f}, mse ≈ {mse:.6f}, w ≈ {w:.4f}"
+        )
 
 
 if __name__ == "__main__":

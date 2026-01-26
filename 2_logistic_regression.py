@@ -44,7 +44,7 @@ def main():
     trY = jnp.asarray(trY, dtype=jnp.int32)
 
     n_examples, n_features = trX.shape
-    
+
     glorot_normal = nn.initializers.glorot_normal()
     w = glorot_normal(rand_key, shape=(n_features, n_classes))
 
@@ -53,7 +53,7 @@ def main():
     for epoch in range(epochs):
         total_loss = 0
         for k in range(num_batches):
-            start, end = k * bz, min((k+1) * bz, n_examples)
+            start, end = k * bz, min((k + 1) * bz, n_examples)
             w, loss = train(w, trX[start:end], trY[start:end], lr)
             total_loss += float(loss)
 

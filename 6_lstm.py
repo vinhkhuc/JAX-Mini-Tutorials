@@ -21,8 +21,8 @@ class LSTMNet(nn.Module):
         # 1. Define the LSTM layer using nn.scan over an LSTMCell.
         lstm = nn.scan(
             nn.LSTMCell,
-            variable_broadcast='params',
-            split_rngs={'params': False},
+            variable_broadcast="params",
+            split_rngs={"params": False},
             in_axes=1,
             out_axes=1,
         )(features=self.hidden_dim)
@@ -30,8 +30,7 @@ class LSTMNet(nn.Module):
         # 2. Initialize the LSTM carry state (hidden state and cell state).
         batch_size = x.shape[0]
         carry = lstm.initialize_carry(
-            jax.random.PRNGKey(42),
-            (batch_size, self.hidden_dim)
+            jax.random.PRNGKey(42), (batch_size, self.hidden_dim)
         )
 
         # 3. Run the LSTM.
@@ -83,7 +82,7 @@ def main():
 
     trX, teX, trY, teY = load_mnist(onehot=False)
     n_examples = trX.shape[0]
-    
+
     # Reshape images to be sequences of rows
     # Shape becomes: [num_samples, seq_length, input_dim]
     trX = trX.reshape(-1, seq_length, input_dim)
@@ -107,7 +106,7 @@ def main():
     for epoch in range(epochs):
         total_loss = 0
         for k in range(num_batches):
-            start, end = k * bz, min((k+1) * bz, n_examples)
+            start, end = k * bz, min((k + 1) * bz, n_examples)
             params, opt_state, loss = train_step(
                 params, opt_state, model, optimizer, trX[start:end], trY[start:end]
             )

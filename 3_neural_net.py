@@ -71,7 +71,7 @@ def main():
     for epoch in range(epochs):
         total_loss = 0
         for k in range(num_batches):
-            start, end = k * bz, min((k+1) * bz, n_examples)
+            start, end = k * bz, min((k + 1) * bz, n_examples)
             params, opt_state, loss = train_step(
                 params, opt_state, model, optimizer, trX[start:end], trY[start:end]
             )

@@ -30,7 +30,7 @@ def model_logits(params, model, X, training, rng=None):
         {"params": params},
         X,
         training=training,
-        **({"rngs": {"dropout": rng}} if training else {})
+        **({"rngs": {"dropout": rng}} if training else {}),
     )
 
 
@@ -80,10 +80,16 @@ def main():
     for epoch in range(epochs):
         total_loss = 0
         for k in range(num_batches):
-            start, end = k * bz, min((k+1) * bz, n_examples)
+            start, end = k * bz, min((k + 1) * bz, n_examples)
             rand_key, using_key = jax.random.split(rand_key)
             params, opt_state, loss = train_step(
-                params, opt_state, model, optimizer, trX[start:end], trY[start:end], using_key
+                params,
+                opt_state,
+                model,
+                optimizer,
+                trX[start:end],
+                trY[start:end],
+                using_key,
             )
             total_loss += float(loss)
 
