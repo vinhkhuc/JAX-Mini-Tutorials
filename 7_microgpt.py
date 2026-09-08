@@ -80,7 +80,7 @@ def train_step(state, x, y, mask):
         loss = optax.softmax_cross_entropy_with_integer_labels(logits=logits, labels=y)
         loss = (loss * mask).sum() / mask.sum()
         return loss
-    
+
     loss, grads = jax.value_and_grad(loss_fn)(state.params, x, y, mask)
     state = state.apply_gradients(grads=grads)
     return state, loss
