@@ -2,6 +2,8 @@ import gzip
 import os
 import urllib.request as request
 from os import path
+import random
+from PIL import Image
 
 import numpy as np
 
@@ -13,6 +15,8 @@ MNIST_FILES = [
     "t10k-images-idx3-ubyte.gz",
     "t10k-labels-idx1-ubyte.gz",
 ]
+
+NAMES_FILE = "names.txt"
 
 
 def download_file(url, local_path):
@@ -55,7 +59,7 @@ def load_mnist(ntrain=60000, ntest=10000, onehot=True):
     with gzip.open(os.path.join(data_dir, "train-images-idx3-ubyte.gz")) as fd:
         buf = fd.read()
         loaded = np.frombuffer(buf, dtype=np.uint8)
-        trX = loaded[16:].reshape((60000, 28 * 28)).astype(float)
+        trX = loaded[16:].reshape((60000, 28 * 28)).astype(np.float32)
 
     with gzip.open(os.path.join(data_dir, "train-labels-idx1-ubyte.gz")) as fd:
         buf = fd.read()
@@ -65,7 +69,7 @@ def load_mnist(ntrain=60000, ntest=10000, onehot=True):
     with gzip.open(os.path.join(data_dir, "t10k-images-idx3-ubyte.gz")) as fd:
         buf = fd.read()
         loaded = np.frombuffer(buf, dtype=np.uint8)
-        teX = loaded[16:].reshape((10000, 28 * 28)).astype(float)
+        teX = loaded[16:].reshape((10000, 28 * 28)).astype(np.float32)
 
     with gzip.open(os.path.join(data_dir, "t10k-labels-idx1-ubyte.gz")) as fd:
         buf = fd.read()
@@ -89,3 +93,53 @@ def load_mnist(ntrain=60000, ntest=10000, onehot=True):
         teY = np.asarray(teY)
 
     return trX, teX, trY, teY
+
+
+def save_image_grid(x, file_path, nrow):
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    
+    x = np.array(x)
+    # x = np.clip(x + 0.5, 0.0, 1.0)  # shift from [-0.5, 0.5] to [0.0, 1.0]
+    x = np.clip(x * 0.5 + 0.5, 0.0, 1.0)  # shift from [-1.0, 1.0] to [0.0, 1.0]
+    B, H, W, C = x.shape
+    ncol = (B + nrow - 1) // nrow
+    
+    pad_B = nrow * ncol - B
+    if pad_B > 0:
+        x = np.pad(x, ((0, pad_B), (0, 0), (0, 0), (0, 0)))
+
+    x = x.reshape((nrow, ncol, H, W, C))
+    x = np.transpose(x, (0, 2, 1, 3, 4))
+    grid = x.reshape((nrow * H, ncol * W, C))
+    grid = (grid * 255.0).astype(np.uint8)  # convert back to [0, 255]
+
+    if C == 1:
+        grid = grid.squeeze(-1)
+        img = Image.fromarray(grid, mode="L")
+    elif C == 3:
+        img = Image.fromarray(grid, mode="RGB")
+    else:
+        raise ValueError(f"Unsupported number of channels: {C}")
+        
+    img.save(file_path)
+
+
+def download_names(local_path):
+    url_root = 'https://raw.githubusercontent.com/karpathy/makemore/refs/heads/master/'
+    f_path = os.path.join(local_path, NAMES_FILE)
+    if not path.exists(f_path):
+        download_file(url_root + NAMES_FILE, f_path)
+
+
+def load_names(rand_seed=42):
+    data_dir = os.path.join(DATASET_DIR, "names/")
+    if not path.exists(data_dir):
+        download_names(data_dir)
+
+    with open(os.path.join(data_dir, NAMES_FILE)) as f:
+        lines = f.read().strip().split('\n')
+        docs = [l.strip() for l in lines if l.strip()]
+
+    random.seed(rand_seed)
+    random.shuffle(docs)
+    return docs
