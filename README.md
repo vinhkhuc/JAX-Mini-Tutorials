@@ -2,7 +2,7 @@ Minimal tutorials for [JAX](https://github.com/jax-ml/jax) adapted
 from Alec Radford's [Theano tutorials](https://github.com/Newmu/Theano-Tutorials).
 
 ```bash
-python3 -m pip install -U jax jaxlib flax optax matplotlib
+python3 -m pip install -U jax jaxlib flax optax pillow
 ```
 
 For acceleration, replace `jax` with:
@@ -18,4 +18,5 @@ For acceleration, replace `jax` with:
   <li><a href="5_convolutional_net.py">Convolutional Neural Network</a></li>
   <li><a href="6_lstm.py">Long Short-Term Memory</a></li>
   <li><a href="7_microgpt.py">Micro GPT</a></li>
+  <li><a href="8_diffusion_ddpm.py">Diffusion DDPM</a></li>
 </ol>
